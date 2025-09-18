@@ -19,7 +19,7 @@ function App() {
               <input></input>
             </div>
             <div className="search-btn">
-              <button>검색버튼</button>
+              <button>검색 버튼</button>
             </div>  
           </div>
           
