@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import logo from "./assets/logo.png";
+import { buildApiUrl, logEnvironmentInfo } from './config/api';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,6 +10,11 @@ function App() {
   const [error, setError] = useState(null);
   
   const API_KEY = "07uZJSzMLx4PjUbYsaJ7D9dk43dZTOUg";
+  
+  // 환경 정보 로깅 (개발 시에만)
+  React.useEffect(() => {
+    logEnvironmentInfo();
+  }, []);
 
   const search = async () => {
     if (!searchTerm.trim()) {
@@ -20,9 +26,11 @@ function App() {
     setError(null);
     
     try {
-      const response = await fetch(
-        `/api/df/auction?itemName=${encodeURIComponent(searchTerm)}&apikey=${API_KEY}`
-      );
+      // 환경에 따라 다른 API URL 사용
+      const apiUrl = buildApiUrl(`/df/auction?itemName=${encodeURIComponent(searchTerm)}&apikey=${API_KEY}`);
+      console.log('API 호출 URL:', apiUrl);
+      
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
         throw new Error(`API 호출 실패: ${response.status}`);
