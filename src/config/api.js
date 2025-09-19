@@ -5,10 +5,16 @@ const API_CONFIG = {
     baseURL: '/api', // Vite 프록시 사용
     useProxy: true
   },
-  // 프로덕션 환경 (배포)
+  // 프로덕션 환경 (배포) - 여러 CORS 프록시 옵션
   production: {
-    baseURL: 'https://cors-anywhere.herokuapp.com/https://api.neople.co.kr',
-    useProxy: false
+    baseURL: 'https://api.allorigins.win/raw?url=https://api.neople.co.kr',
+    useProxy: false,
+    // 대안 프록시들
+    alternatives: [
+      'https://corsproxy.io/?https://api.neople.co.kr',
+      'https://thingproxy.freeboard.io/fetch/https://api.neople.co.kr',
+      'https://api.codetabs.com/v1/proxy?quest=https://api.neople.co.kr'
+    ]
   }
 };
 

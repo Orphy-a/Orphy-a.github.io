@@ -30,7 +30,30 @@ function App() {
       const apiUrl = buildApiUrl(`/df/auction?itemName=${encodeURIComponent(searchTerm)}&apikey=${API_KEY}`);
       console.log('API 호출 URL:', apiUrl);
       
-      const response = await fetch(apiUrl);
+      let response = await fetch(apiUrl);
+      
+      // 프로덕션 환경에서 403 에러 발생 시 대안 프록시 시도
+      if (!response.ok && response.status === 403) {
+        console.log('기본 프록시 실패, 대안 프록시 시도 중...');
+        const { getApiConfig } = await import('./config/api');
+        const config = getApiConfig();
+        
+        if (config.alternatives) {
+          for (const altProxy of config.alternatives) {
+            try {
+              console.log('대안 프록시 시도:', altProxy);
+              response = await fetch(`${altProxy}/df/auction?itemName=${encodeURIComponent(searchTerm)}&apikey=${API_KEY}`);
+              if (response.ok) {
+                console.log('대안 프록시 성공!');
+                break;
+              }
+            } catch (altErr) {
+              console.log('대안 프록시 실패:', altErr.message);
+              continue;
+            }
+          }
+        }
+      }
       
       if (!response.ok) {
         throw new Error(`API 호출 실패: ${response.status}`);
